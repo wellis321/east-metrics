@@ -244,3 +244,93 @@ function dashboard_alerts(PDO $pdo, int $landlordId, string $currentYear, ?strin
 
     return $alerts;
 }
+
+/**
+ * The indicator columns to include in an export: either the curated ~40 key
+ * indicators shown throughout the dashboard, or every raw column the
+ * regulator's file has ever contained (identity fields — name, financial
+ * year, etc — are added separately by export_rows() and excluded here).
+ *
+ * @return string[]
+ */
+function export_columns(PDO $pdo, bool $keyOnly): array
+{
+    if ($keyOnly) {
+        return array_column(key_indicator_catalog($pdo), 'column_name');
+    }
+
+    return $pdo->query('SELECT DISTINCT column_name FROM indicator_values ORDER BY column_name')->fetchAll(PDO::FETCH_COLUMN);
+}
+
+/** @return int total landlord+year rows an export with these filters would contain */
+function export_row_count(PDO $pdo, ?string $year, bool $erOnly): int
+{
+    $where = [];
+    $params = [];
+    if ($year !== null) {
+        $where[] = 's.financial_year = ?';
+        $params[] = $year;
+    }
+    if ($erOnly) {
+        $where[] = 'l.is_east_renfrewshire = 1';
+    }
+    $whereSql = $where !== [] ? 'WHERE ' . implode(' AND ', $where) : '';
+
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM submissions s JOIN landlords l ON l.id = s.landlord_id $whereSql");
+    $stmt->execute($params);
+
+    return (int) $stmt->fetchColumn();
+}
+
+/**
+ * Reconstructs one wide row per landlord+year (identity fields followed by
+ * the given indicator columns), the same shape as the original SHR file,
+ * from the EAV-style indicator_values table. Pass $limit to cap the number
+ * of landlord+year rows fetched, e.g. for an on-page preview.
+ *
+ * @param string[] $columns
+ * @return array<int,array<string,mixed>>
+ */
+function export_rows(PDO $pdo, ?string $year, bool $erOnly, array $columns, ?int $limit = null): array
+{
+    $where = [];
+    $params = [];
+    if ($year !== null) {
+        $where[] = 's.financial_year = ?';
+        $params[] = $year;
+    }
+    if ($erOnly) {
+        $where[] = 'l.is_east_renfrewshire = 1';
+    }
+    $whereSql = $where !== [] ? 'WHERE ' . implode(' AND ', $where) : '';
+    $limitSql = $limit !== null ? 'LIMIT ' . (int) $limit : '';
+
+    $stmt = $pdo->prepare(
+        "SELECT s.id, l.name, l.social_landlord_id, l.landlord_type, l.settlement, l.national_operator, s.financial_year
+           FROM submissions s JOIN landlords l ON l.id = s.landlord_id
+           $whereSql
+           ORDER BY l.name, s.financial_year
+           $limitSql"
+    );
+    $stmt->execute($params);
+    $submissions = $stmt->fetchAll();
+
+    $rows = [];
+    foreach ($submissions as $sub) {
+        $values = fetch_indicator_values($pdo, (int) $sub['id']);
+        $row = [
+            'Landlord name' => $sub['name'],
+            'Social Landlord ID' => $sub['social_landlord_id'],
+            'Landlord type' => $sub['landlord_type'],
+            'Settlement' => $sub['settlement'],
+            'National operator' => $sub['national_operator'],
+            'Financial year' => $sub['financial_year'],
+        ];
+        foreach ($columns as $column) {
+            $row[$column] = $values[$column] ?? null;
+        }
+        $rows[] = $row;
+    }
+
+    return $rows;
+}

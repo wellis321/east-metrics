@@ -147,13 +147,15 @@ function render_layout(string $title, string $content, array $options = []): voi
                 <?php endforeach; ?>
             </nav>
             <div class="topbar-user">
-                <a href="/changelog.php" class="topbar-util <?= $active === 'changelog' ? 'active' : '' ?>">Changelog</a>
+                <a href="/export.php" class="topbar-util <?= $active === 'export' ? 'active' : '' ?>">Export</a>
                 <?php if (($_SESSION['app_role'] ?? '') === 'admin'): ?>
                     <a href="/admin/import.php" class="topbar-util <?= $active === 'import' ? 'active' : '' ?>">Import data</a>
                 <?php endif; ?>
                 <a href="/help.php" class="topbar-util <?= $active === 'help' ? 'active' : '' ?>">Help</a>
-                <span class="topbar-user-name"><?= h((string) ($_SESSION['admin_user'] ?? '')) ?></span>
-                <a href="/logout.php" class="btn btn-ghost btn-sm">Log out</a>
+                <div class="topbar-account">
+                    <span class="topbar-user-name"><?= h((string) ($_SESSION['admin_user'] ?? '')) ?></span>
+                    <a href="/logout.php" class="btn btn-ghost btn-sm">Log out</a>
+                </div>
             </div>
         <?php else: ?>
             <nav class="nav"></nav>
@@ -190,7 +192,19 @@ function render_layout(string $title, string $content, array $options = []): voi
     <?php
 }
 
+/**
+ * Appends a ?v=<mtime> cache-buster so a CSS/JS edit is picked up on the
+ * next page load instead of the browser serving a stale cached copy —
+ * without needing anyone to hard-refresh.
+ */
 function asset_url(string $path): string
 {
-    return '/' . ltrim($path, '/');
+    $urlPath = '/' . ltrim($path, '/');
+    $diskPath = dirname(__DIR__) . '/public/' . ltrim($path, '/');
+
+    if (is_file($diskPath)) {
+        $urlPath .= '?v=' . filemtime($diskPath);
+    }
+
+    return $urlPath;
 }

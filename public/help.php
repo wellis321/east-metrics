@@ -24,6 +24,7 @@ ob_start();
     <a href="#access">Accounts &amp; access</a>
     <a href="#faq">Common questions</a>
     <a href="/security.php" class="docs-sidebar-external">Security features →</a>
+    <a href="/changelog.php" class="docs-sidebar-external">Changelog →</a>
 </nav>
 <div class="docs-content">
 

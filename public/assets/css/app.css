@@ -50,10 +50,14 @@ a { color: var(--accent); }
 .nav a:hover { opacity: 1; }
 .nav a.active { opacity: 1; border-bottom-color: #fff; }
 .topbar-user { display: flex; align-items: center; gap: .9rem; font-size: .85rem; }
-.topbar-user-name { opacity: .9; }
 .topbar-util { color: var(--nav-text); opacity: .7; text-decoration: none; font-size: .8125rem; font-weight: 500; padding-bottom: .2rem; border-bottom: 2px solid transparent; }
 .topbar-util:hover { opacity: 1; }
 .topbar-util.active { opacity: 1; border-bottom-color: rgba(255,255,255,.6); }
+
+/* Account identity (name + log out) reads as a distinct group from the
+   utility links above, rather than a stray label sitting among them. */
+.topbar-account { display: flex; align-items: center; gap: .6rem; padding-left: .85rem; border-left: 1px solid rgba(255,255,255,.22); }
+.topbar-user-name { opacity: .85; font-size: .8125rem; white-space: nowrap; }
 
 .page { padding: 2rem 1.5rem 4rem; }
 .page-inner { max-width: 1200px; margin: 0 auto; }
@@ -118,7 +122,9 @@ select { max-width: 420px; }
 }
 .btn:hover { background: var(--accent-dk); }
 .btn-secondary { background: #fff; color: var(--accent); border: 1px solid var(--accent); }
+.btn-secondary:hover { background: #eef6f2; color: var(--accent-dk); border-color: var(--accent-dk); }
 .btn-ghost { background: transparent; color: var(--nav-text); border: 1px solid rgba(255,255,255,.35); }
+.btn-ghost:hover { background: rgba(255,255,255,.12); }
 .btn-sm { padding: .35rem .7rem; font-size: .8125rem; }
 
 .login-wrap { max-width: 380px; margin: 10vh auto 0; }
@@ -301,6 +307,7 @@ select { max-width: 420px; }
 .docs-sidebar a { display: block; padding: .4rem .55rem; border-radius: var(--r); font-size: .875rem; color: var(--text); text-decoration: none; }
 .docs-sidebar a:hover { background: var(--bg); }
 .docs-sidebar-external { margin-top: .5rem; padding-top: .75rem !important; border-top: 1px solid var(--border); color: var(--accent) !important; font-weight: 600; }
+.docs-sidebar-external + .docs-sidebar-external { margin-top: 0; padding-top: .1rem !important; border-top: none; }
 
 @media (max-width: 780px) {
     .docs-layout { grid-template-columns: 1fr; }
