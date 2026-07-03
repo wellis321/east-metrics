@@ -1,0 +1,41 @@
+# Route all web traffic into public/ (Hostinger: repo root is public_html)
+DirectoryIndex index.php
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Block direct access to app code/data outside public/ — evaluated
+    # first, in the same rewrite pass, so it can't be bypassed by requesting
+    # a real file's exact path (e.g. the SHR xlsx under /documents/, or a
+    # vendor/ library file), which would otherwise skip the "does this path
+    # exist as a real file" rewrite condition below and be served directly.
+    RewriteRule ^(config|includes|sql|documents|vendor)(/|$) - [F,L]
+
+    # Site root → app home
+    RewriteRule ^$ public/index.php [L]
+
+    # Don't rewrite real /public/ requests (e.g. /public/index.php)
+    RewriteRule ^public/ - [L]
+
+    # Everything else → public/
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+
+# Belt-and-braces if mod_rewrite is ever unavailable
+<IfModule mod_authz_core.c>
+    RedirectMatch 403 ^/(config|includes|sql|documents|vendor)(/|$)
+</IfModule>
+
+<Files ".env">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+</Files>
+
+<Files ".env.example">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+</Files>
