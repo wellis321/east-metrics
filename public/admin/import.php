@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     );
                 }
                 flash('success', $message);
-                redirect(app_url('/changelog.php'));
+                redirect(app_url('/dashboard.php'));
             } catch (Throwable $e) {
                 error_log('SHR import failed: ' . $e->getMessage());
                 $error = 'The file could not be imported: ' . $e->getMessage();
