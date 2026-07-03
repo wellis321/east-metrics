@@ -8,7 +8,9 @@ load_env(dirname(__DIR__) . '/.env');
 
 return [
     'host' => env('DB_HOST', '127.0.0.1'),
-    'port' => (int) env('DB_PORT', '8889'),
+    // 3306 is the standard MySQL port — set DB_PORT explicitly if your local
+    // dev setup (e.g. MAMP) uses a different one.
+    'port' => (int) env('DB_PORT', '3306'),
     'database' => env('DB_DATABASE', 'east_ren_metrics'),
     'username' => env('DB_USERNAME', 'root'),
     'password' => env('DB_PASSWORD', 'root'),

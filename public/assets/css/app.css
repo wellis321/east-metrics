@@ -336,3 +336,25 @@ select { max-width: 420px; }
 .security-status-pass { background: #e7f6ee; color: var(--success); }
 .security-status-fail { background: #fdecea; color: var(--danger); }
 .security-status-na { background: var(--bg); color: var(--muted); }
+
+/* ── Import progress overlay ────────────────────────────────────────── */
+
+.import-overlay {
+    position: fixed; inset: 0; background: rgba(0, 30, 22, .55); z-index: 1000;
+    display: none; align-items: center; justify-content: center; padding: 1.5rem;
+}
+.import-overlay.is-visible { display: flex; }
+.import-overlay-card {
+    background: var(--surface); border-radius: var(--r-lg); padding: 2rem;
+    max-width: 400px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,.25);
+}
+.import-overlay-card h2 { margin: 1.25rem 0 .75rem; font-size: 1.1rem; }
+.import-overlay-card p { font-size: .9rem; color: var(--muted); margin: 0 0 .75rem; line-height: 1.5; }
+.import-overlay-card p:last-child { margin-bottom: 0; }
+
+.import-spinner {
+    width: 2.5rem; height: 2.5rem; margin: 0 auto;
+    border: 3px solid var(--border); border-top-color: var(--accent);
+    border-radius: 50%; animation: import-spin .8s linear infinite;
+}
+@keyframes import-spin { to { transform: rotate(360deg); } }

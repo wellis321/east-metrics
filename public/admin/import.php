@@ -62,15 +62,42 @@ ob_start();
 <?php endif; ?>
 
 <div class="card" style="max-width:520px;margin-bottom:2rem;">
-    <form method="POST" enctype="multipart/form-data">
+    <form method="POST" enctype="multipart/form-data" id="import-form">
         <?= csrf_field() ?>
         <div class="form-row">
             <label for="xlsx">SHR Charter data set (.xlsx)</label>
             <input type="file" id="xlsx" name="xlsx" accept=".xlsx" required>
         </div>
-        <button type="submit" class="btn">Upload &amp; import</button>
+        <button type="submit" class="btn" id="import-submit">Upload &amp; import</button>
     </form>
 </div>
+
+<div id="import-overlay" class="import-overlay">
+    <div class="import-overlay-card">
+        <div class="import-spinner" aria-hidden="true"></div>
+        <h2>Importing your data…</h2>
+        <p>Parsing the file and comparing it against what's already stored can take up to a minute for the
+        full data set.</p>
+        <p><strong>Please don't close this tab or navigate away</strong> — you'll be taken to the changelog
+        automatically once it's done.</p>
+    </div>
+</div>
+
+<script>
+(function () {
+    var form = document.getElementById('import-form');
+    var overlay = document.getElementById('import-overlay');
+    var submitting = false;
+    form.addEventListener('submit', function (e) {
+        if (submitting) {
+            e.preventDefault();
+            return;
+        }
+        submitting = true;
+        overlay.classList.add('is-visible');
+    });
+})();
+</script>
 
 <h2>Recent imports</h2>
 <?php if ($imports === []): ?>
