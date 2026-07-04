@@ -66,6 +66,29 @@ $chartData = [
     'unit' => $selectedIndicator['unit'],
 ];
 
+if (($_GET['download'] ?? '') === 'csv') {
+    $safeName = trim(strtolower(preg_replace('/[^a-z0-9]+/i', '-', $selectedIndicator['short_label']) ?? ''), '-');
+    header('Content-Type: text/csv; charset=utf-8');
+    header('Content-Disposition: attachment; filename="trend-' . $safeName . '.csv"');
+    $out = fopen('php://output', 'w');
+
+    $headerRow = ['Financial year', $chartData['erName'], 'Scotland average'];
+    foreach ($peers as $peer) {
+        $headerRow[] = $peer['name'];
+    }
+    fputcsv($out, $headerRow, ',', '"', '\\');
+
+    foreach ($years as $i => $year) {
+        $row = [$year, $chartData['erValues'][$i], $chartData['scotlandValues'][$i]];
+        foreach ($peers as $peer) {
+            $row[] = $peer['values'][$i];
+        }
+        fputcsv($out, $row, ',', '"', '\\');
+    }
+    fclose($out);
+    exit;
+}
+
 $cameFrom = $_GET['from'] ?? '';
 $backToAlertsFlag = $_GET['flag'] ?? '';
 if (!in_array($backToAlertsFlag, ['below_average', 'approaching', 'declining'], true)) {
@@ -137,6 +160,12 @@ ob_start();
 <div class="chart-wrap">
     <canvas id="trendChart" height="90"></canvas>
 </div>
+
+<p style="margin-top:.75rem;">
+    <a class="btn btn-secondary btn-sm" href="?<?= h(http_build_query(array_merge($_GET, ['download' => 'csv']))) ?>">
+        ⬇ Download this chart's data (CSV)
+    </a>
+</p>
 
 <?php if ($noDataNames !== []): ?>
     <p class="chart-note">

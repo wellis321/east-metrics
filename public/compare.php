@@ -39,6 +39,33 @@ foreach ($landlords as $l) {
     }
 }
 
+if (($_GET['download'] ?? '') === 'csv') {
+    $safeYear = str_replace('/', '_', $year);
+    header('Content-Type: text/csv; charset=utf-8');
+    header('Content-Disposition: attachment; filename="compare-' . $safeYear . '.csv"');
+    $out = fopen('php://output', 'w');
+
+    $headerRow = ['Indicator'];
+    foreach ($compareIds as $id) {
+        $headerRow[] = $compareNames[$id] ?? '';
+    }
+    $headerRow[] = 'Scotland avg';
+    fputcsv($out, $headerRow, ',', '"', '\\');
+
+    foreach ($catalog as $ind) {
+        $row = [$ind['short_label']];
+        foreach ($compareIds as $id) {
+            $val = indicator_value_for($pdo, $id, $year, $ind['column_name']);
+            $row[] = fmt_value($val, $ind['unit']);
+        }
+        $avg = scotland_average($pdo, $year, $ind['column_name']);
+        $row[] = fmt_value($avg !== null ? (string) $avg : null, $ind['unit']);
+        fputcsv($out, $row, ',', '"', '\\');
+    }
+    fclose($out);
+    exit;
+}
+
 ob_start();
 ?>
 <h1>Compare</h1>
@@ -82,6 +109,12 @@ ob_start();
 </form>
 
 <script src="<?= h(asset_url('/assets/js/peer-picker.js')) ?>"></script>
+
+<p style="margin-bottom:.75rem;">
+    <a class="btn btn-secondary btn-sm" href="?<?= h(http_build_query(array_merge($_GET, ['download' => 'csv']))) ?>">
+        ⬇ Download this table (CSV)
+    </a>
+</p>
 
 <div class="card" id="compare-results" style="overflow-x:auto;">
     <table>
