@@ -88,19 +88,29 @@ ob_start();
             <?php if ($currentCategory !== null): ?></optgroup><?php endif; ?>
         </select>
     </div>
-    <div class="form-row peer-picker" style="margin-bottom:0;">
-        <label for="peer-search">Compare with — pick as many as you like</label>
-        <div class="peer-chips" id="peer-chips"></div>
-        <input type="text" id="peer-search" placeholder="Search landlords…" autocomplete="off">
-        <div class="peer-picker-list" id="peer-picker-list">
-            <?php foreach ($landlords as $l): ?>
-                <?php if ((int) $l['id'] === $erId) continue; ?>
-                <label class="peer-picker-item" data-name="<?= h(strtolower($l['name'])) ?>">
-                    <input type="checkbox" name="peers[]" value="<?= (int) $l['id'] ?>"
-                        <?= in_array((int) $l['id'], $peerIds, true) ? 'checked' : '' ?>>
-                    <?= h($l['name']) ?>
-                </label>
-            <?php endforeach; ?>
+    <div class="form-row peer-picker" data-peer-picker style="margin-bottom:0;">
+        <label>Compare with</label>
+        <button type="button" class="btn btn-secondary btn-sm" data-peer-toggle>+ Add landlords</button>
+
+        <div class="peer-picker-panel" data-peer-panel hidden>
+            <div class="peer-picker-panel-header" data-peer-header>
+                <span>Choose landlords to compare</span>
+                <button type="button" class="peer-picker-panel-close" data-peer-close aria-label="Close">×</button>
+            </div>
+            <div class="peer-picker-panel-body">
+                <div class="peer-chips" data-peer-chips></div>
+                <input type="text" data-peer-search placeholder="Search landlords…" autocomplete="off">
+                <div class="peer-picker-list" data-peer-list>
+                    <?php foreach ($landlords as $l): ?>
+                        <?php if ((int) $l['id'] === $erId) continue; ?>
+                        <label class="peer-picker-item" data-name="<?= h(strtolower($l['name'])) ?>">
+                            <input type="checkbox" name="peers[]" value="<?= (int) $l['id'] ?>"
+                                <?= in_array((int) $l['id'], $peerIds, true) ? 'checked' : '' ?>>
+                            <?= h($l['name']) ?>
+                        </label>
+                    <?php endforeach; ?>
+                </div>
+            </div>
         </div>
     </div>
     <button type="submit" class="btn btn-secondary">Update chart</button>
@@ -118,49 +128,8 @@ ob_start();
 <?php endif; ?>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="<?= h(asset_url('/assets/js/peer-picker.js')) ?>"></script>
 <script>
-(function () {
-    var search = document.getElementById('peer-search');
-    var list = document.getElementById('peer-picker-list');
-    var chips = document.getElementById('peer-chips');
-    var items = list.querySelectorAll('.peer-picker-item');
-
-    function renderChips() {
-        chips.innerHTML = '';
-        items.forEach(function (item) {
-            var box = item.querySelector('input');
-            if (box.checked) {
-                var chip = document.createElement('span');
-                chip.className = 'peer-chip';
-                chip.textContent = item.textContent.trim();
-                var remove = document.createElement('button');
-                remove.type = 'button';
-                remove.textContent = '×';
-                remove.setAttribute('aria-label', 'Remove ' + item.textContent.trim());
-                remove.addEventListener('click', function () {
-                    box.checked = false;
-                    renderChips();
-                });
-                chip.appendChild(remove);
-                chips.appendChild(chip);
-            }
-        });
-    }
-
-    search.addEventListener('input', function () {
-        var q = search.value.trim().toLowerCase();
-        items.forEach(function (item) {
-            item.style.display = item.dataset.name.includes(q) ? '' : 'none';
-        });
-    });
-
-    items.forEach(function (item) {
-        item.querySelector('input').addEventListener('change', renderChips);
-    });
-
-    renderChips();
-})();
-
 const chartData = <?= json_encode($chartData, JSON_THROW_ON_ERROR) ?>;
 const ctx = document.getElementById('trendChart');
 const peerColors = ['#1d4ed8', '#9333ea', '#c2410c', '#0891b2', '#be185d', '#4d7c0f'];
