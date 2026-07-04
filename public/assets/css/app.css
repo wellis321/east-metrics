@@ -70,6 +70,13 @@ a { color: var(--accent); }
 
 /* Account identity (name + log out) reads as a distinct group from the
    utility links above, rather than a stray label sitting among them. */
+.topbar-dropdown { position: relative; }
+.topbar-dropdown-toggle { display: inline-flex; align-items: center; gap: .3rem; background: none; border: none; border-bottom: 2px solid transparent; font-family: inherit; cursor: pointer; }
+.topbar-dropdown-menu { display: none; position: absolute; top: calc(100% + .6rem); right: 0; min-width: 160px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); box-shadow: 0 8px 24px rgba(0,0,0,.12); padding: .35rem; z-index: 20; }
+.topbar-dropdown-menu.is-open { display: block; }
+.topbar-dropdown-item { display: block; padding: .5rem .65rem; border-radius: 4px; font-size: .85rem; font-weight: 500; color: var(--text); text-decoration: none; }
+.topbar-dropdown-item:hover { background: var(--bg); }
+.topbar-dropdown-item.active { color: var(--accent); }
 .topbar-account { display: flex; align-items: center; gap: .6rem; padding-left: .85rem; border-left: 1px solid rgba(255,255,255,.22); }
 .topbar-user-name { opacity: .85; font-size: .8125rem; white-space: nowrap; }
 

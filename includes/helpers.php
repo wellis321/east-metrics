@@ -175,10 +175,18 @@ function render_layout(string $title, string $content, array $options = []): voi
                 <?php endforeach; ?>
             </nav>
             <div class="topbar-user">
-                <a href="/export.php" class="topbar-util <?= $active === 'export' ? 'active' : '' ?>">Export</a>
-                <?php if (($_SESSION['app_role'] ?? '') === 'admin'): ?>
-                    <a href="/admin/import.php" class="topbar-util <?= $active === 'import' ? 'active' : '' ?>">Import data</a>
-                <?php endif; ?>
+                <div class="topbar-dropdown" data-dropdown>
+                    <button type="button" class="topbar-util topbar-dropdown-toggle <?= in_array($active, ['export', 'import'], true) ? 'active' : '' ?>" data-dropdown-toggle>
+                        Data
+                        <svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="4,6 8,10 12,6"/></svg>
+                    </button>
+                    <div class="topbar-dropdown-menu" data-dropdown-menu>
+                        <a href="/export.php" class="topbar-dropdown-item <?= $active === 'export' ? 'active' : '' ?>">Export</a>
+                        <?php if (($_SESSION['app_role'] ?? '') === 'admin'): ?>
+                            <a href="/admin/import.php" class="topbar-dropdown-item <?= $active === 'import' ? 'active' : '' ?>">Import data</a>
+                        <?php endif; ?>
+                    </div>
+                </div>
                 <a href="/help.php" class="topbar-util <?= $active === 'help' ? 'active' : '' ?>">Help</a>
                 <div class="topbar-account">
                     <span class="topbar-user-name"><?= h((string) ($_SESSION['admin_user'] ?? '')) ?></span>
@@ -215,6 +223,9 @@ function render_layout(string $title, string $content, array $options = []): voi
         <a href="<?= h(APP_URL) ?>/">Housing Metrics</a>
     </div>
 </footer>
+<?php if (is_logged_in()): ?>
+<script src="<?= h(asset_url('/assets/js/nav-dropdown.js')) ?>"></script>
+<?php endif; ?>
 </body>
 </html>
     <?php
