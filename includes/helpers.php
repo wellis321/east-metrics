@@ -26,6 +26,23 @@ function icon_closing_gap(): string
     return '<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="8" y1="1" x2="8" y2="15" stroke-dasharray="2 2"/><polyline points="2,5 5,8 2,11"/><polyline points="14,5 11,8 14,11"/></svg>';
 }
 
+// ── Highlight flag icons — mirror images of the alert icons above ────────────
+
+function icon_above_average(): string
+{
+    return '<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="8" y1="15" x2="8" y2="7"/><polyline points="4,10 8,6 12,10"/><line x1="2" y1="2" x2="14" y2="2"/></svg>';
+}
+
+function icon_improving(): string
+{
+    return '<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="2,12 6,7 9,10 14,3"/><polyline points="9,3 14,3 14,8"/></svg>';
+}
+
+function icon_pulling_ahead(): string
+{
+    return '<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="8" y1="1" x2="8" y2="15" stroke-dasharray="2 2"/><polyline points="5,5 2,8 5,11"/><polyline points="11,5 14,8 11,11"/></svg>';
+}
+
 // ── CSRF ──────────────────────────────────────────────────────────────────────
 
 function csrf_token(): string
@@ -117,10 +134,11 @@ function render_layout(string $title, string $content, array $options = []): voi
     // analysis views, so they live together in the lighter-weight utility
     // strip on the right instead of competing for primary billing.
     $navItems = [
-        'dashboard' => ['/dashboard.php', 'Dashboard'],
-        'alerts'    => ['/alerts.php', 'Alerts'],
-        'trends'    => ['/trends.php', 'Trends'],
-        'compare'   => ['/compare.php', 'Compare'],
+        'dashboard'  => ['/dashboard.php', 'Dashboard'],
+        'alerts'     => ['/alerts.php', 'Alerts'],
+        'highlights' => ['/highlights.php', 'Highlights'],
+        'trends'     => ['/trends.php', 'Trends'],
+        'compare'    => ['/compare.php', 'Compare'],
     ];
     ?>
 <!DOCTYPE html>

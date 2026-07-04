@@ -159,13 +159,14 @@ select { max-width: 420px; }
 .badge-landlord { background: #eef4ff; color: #1d4ed8; }
 .badge-danger { background: #fdecea; color: var(--danger); }
 .badge-orange { background: #fdf0e7; color: #c2410c; }
+.badge-teal { background: #e0f2f4; color: #0e7490; }
 
-.flag-cell { display: flex; flex-direction: column; gap: .3rem; align-items: flex-start; }
+.flag-stack { display: flex; flex-direction: column; gap: .3rem; align-items: flex-start; }
 
-.alert-row { cursor: pointer; }
-.alert-row:hover { background: var(--bg); }
-.alert-row-link { color: var(--text); text-decoration: none; font-weight: 500; }
-.alert-row-link:hover { color: var(--accent); text-decoration: underline; }
+.clickable-row { cursor: pointer; }
+.clickable-row:hover { background: var(--bg); }
+.clickable-row-link { color: var(--text); text-decoration: none; font-weight: 500; }
+.clickable-row-link:hover { color: var(--accent); text-decoration: underline; }
 
 .change-row { display: flex; justify-content: space-between; gap: 1rem; padding: .75rem 0; border-bottom: 1px solid var(--border); font-size: .9rem; }
 .change-row:last-child { border-bottom: none; }
@@ -243,7 +244,7 @@ select { max-width: 420px; }
 .landing-figure { margin: 0; }
 .landing-figure figcaption { margin-top: .75rem; font-size: .8125rem; color: var(--muted); text-align: center; }
 
-.landing-features { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; }
+.landing-features { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.25rem; }
 
 .landing-feature-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 1.5rem; }
 .landing-feature-card h3 { font-size: 1rem; font-weight: 700; margin: 0 0 .5rem; color: var(--text); }

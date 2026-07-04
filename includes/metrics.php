@@ -165,6 +165,59 @@ function group_kpis_by_category(array $kpis): array
 }
 
 /**
+ * Shared movement computation behind both dashboard_alerts() and
+ * dashboard_highlights(): a landlord's current and prior-year value, the
+ * Scotland average for both years, and how far ahead/behind of that
+ * average it sits now vs a year ago. "Gap" is positive when on the good
+ * side of the average, accounting for whether higher or lower is better,
+ * so the same number means "good" in both directions.
+ *
+ * @param array{column_name:string,short_label:string,category:string,unit:string,higher_is_better:bool} $ind
+ * @return array{
+ *   column_name:string,short_label:string,category:string,unit:string,higher_is_better:bool,
+ *   current:?float,previous:?float,scotland_avg:?float,previous_scotland_avg:?float,
+ *   delta:?float,gap:?float,previous_gap:?float
+ * }
+ */
+function indicator_movement(PDO $pdo, int $landlordId, string $currentYear, ?string $previousYear, array $ind): array
+{
+    $higherIsBetter = (bool) $ind['higher_is_better'];
+    $column = $ind['column_name'];
+
+    $current = indicator_value_for($pdo, $landlordId, $currentYear, $column);
+    $current = is_numeric($current) ? (float) $current : null;
+    $previous = $previousYear !== null ? indicator_value_for($pdo, $landlordId, $previousYear, $column) : null;
+    $previous = is_numeric($previous) ? (float) $previous : null;
+
+    $currentAvg = scotland_average($pdo, $currentYear, $column);
+    $previousAvg = $previousYear !== null ? scotland_average($pdo, $previousYear, $column) : null;
+
+    $delta = ($current !== null && $previous !== null) ? $current - $previous : null;
+
+    $gap = ($current !== null && $currentAvg !== null)
+        ? ($higherIsBetter ? $current - $currentAvg : $currentAvg - $current)
+        : null;
+    $previousGap = ($previous !== null && $previousAvg !== null)
+        ? ($higherIsBetter ? $previous - $previousAvg : $previousAvg - $previous)
+        : null;
+
+    return [
+        'column_name' => $column,
+        'short_label' => $ind['short_label'],
+        'category' => $ind['category'],
+        'unit' => $ind['unit'],
+        'higher_is_better' => $higherIsBetter,
+        'current' => $current,
+        'previous' => $previous,
+        'scotland_avg' => $currentAvg,
+        'previous_scotland_avg' => $previousAvg,
+        'delta' => $delta,
+        'gap' => $gap,
+        'previous_gap' => $previousGap,
+    ];
+}
+
+/**
  * Flags indicators that need attention: a declining year-on-year trend,
  * currently below the Scotland average, or still above average but closing
  * in on it faster than a rounding blip would explain. Only indicators with
@@ -186,29 +239,18 @@ function dashboard_alerts(PDO $pdo, int $landlordId, string $currentYear, ?strin
     $alerts = [];
 
     foreach ($catalog as $ind) {
-        $higherIsBetter = (bool) $ind['higher_is_better'];
-        $column = $ind['column_name'];
+        $m = indicator_movement($pdo, $landlordId, $currentYear, $previousYear, $ind);
+        $higherIsBetter = $m['higher_is_better'];
+        $current = $m['current'];
+        $currentAvg = $m['scotland_avg'];
+        $delta = $m['delta'];
+        $gap = $m['gap'];
+        $previousGap = $m['previous_gap'];
 
-        $current = indicator_value_for($pdo, $landlordId, $currentYear, $column);
-        $current = is_numeric($current) ? (float) $current : null;
-        $previous = $previousYear !== null ? indicator_value_for($pdo, $landlordId, $previousYear, $column) : null;
-        $previous = is_numeric($previous) ? (float) $previous : null;
-
-        $currentAvg = scotland_average($pdo, $currentYear, $column);
-        $previousAvg = $previousYear !== null ? scotland_average($pdo, $previousYear, $column) : null;
-
-        $delta = ($current !== null && $previous !== null) ? $current - $previous : null;
         $isDeclining = $delta !== null && ($higherIsBetter ? $delta < -$epsilon : $delta > $epsilon);
 
         $isBelowAverage = $current !== null && $currentAvg !== null
             && ($higherIsBetter ? $current < $currentAvg - $epsilon : $current > $currentAvg + $epsilon);
-
-        $gap = ($current !== null && $currentAvg !== null)
-            ? ($higherIsBetter ? $current - $currentAvg : $currentAvg - $current)
-            : null;
-        $previousGap = ($previous !== null && $previousAvg !== null)
-            ? ($higherIsBetter ? $previous - $previousAvg : $previousAvg - $previous)
-            : null;
 
         $isApproachingAverage = !$isBelowAverage && $gap !== null && $gap > 0
             && $previousGap !== null && $gap < $previousGap - $epsilon;
@@ -217,23 +259,11 @@ function dashboard_alerts(PDO $pdo, int $landlordId, string $currentYear, ?strin
             continue;
         }
 
-        $alerts[] = [
-            'column_name' => $column,
-            'short_label' => $ind['short_label'],
-            'category' => $ind['category'],
-            'unit' => $ind['unit'],
-            'higher_is_better' => $higherIsBetter,
-            'current' => $current,
-            'previous' => $previous,
-            'scotland_avg' => $currentAvg,
-            'previous_scotland_avg' => $previousAvg,
-            'delta' => $delta,
-            'gap' => $gap,
-            'previous_gap' => $previousGap,
+        $alerts[] = array_merge($m, [
             'is_declining' => $isDeclining,
             'is_below_average' => $isBelowAverage,
             'is_approaching_average' => $isApproachingAverage,
-        ];
+        ]);
     }
 
     usort($alerts, static function (array $a, array $b): int {
@@ -243,6 +273,63 @@ function dashboard_alerts(PDO $pdo, int $landlordId, string $currentYear, ?strin
     });
 
     return $alerts;
+}
+
+/**
+ * The mirror image of dashboard_alerts(): indicators currently above the
+ * Scotland average, pulling further ahead of it (already ahead, and the
+ * lead is growing faster than rounding noise would explain), or moved in
+ * the right direction versus last year.
+ *
+ * @return array<int,array{
+ *   column_name:string,short_label:string,category:string,unit:string,higher_is_better:bool,
+ *   current:?float,previous:?float,scotland_avg:?float,previous_scotland_avg:?float,
+ *   delta:?float,gap:?float,previous_gap:?float,
+ *   is_improving:bool,is_above_average:bool,is_pulling_ahead:bool
+ * }>
+ */
+function dashboard_highlights(PDO $pdo, int $landlordId, string $currentYear, ?string $previousYear): array
+{
+    $epsilon = 0.05;
+
+    $catalog = alertable_indicator_catalog($pdo);
+    $highlights = [];
+
+    foreach ($catalog as $ind) {
+        $m = indicator_movement($pdo, $landlordId, $currentYear, $previousYear, $ind);
+        $higherIsBetter = $m['higher_is_better'];
+        $current = $m['current'];
+        $currentAvg = $m['scotland_avg'];
+        $delta = $m['delta'];
+        $gap = $m['gap'];
+        $previousGap = $m['previous_gap'];
+
+        $isImproving = $delta !== null && ($higherIsBetter ? $delta > $epsilon : $delta < -$epsilon);
+
+        $isAboveAverage = $current !== null && $currentAvg !== null
+            && ($higherIsBetter ? $current > $currentAvg + $epsilon : $current < $currentAvg - $epsilon);
+
+        $isPullingAhead = $isAboveAverage && $gap !== null
+            && $previousGap !== null && $gap > $previousGap + $epsilon;
+
+        if (!$isImproving && !$isAboveAverage && !$isPullingAhead) {
+            continue;
+        }
+
+        $highlights[] = array_merge($m, [
+            'is_improving' => $isImproving,
+            'is_above_average' => $isAboveAverage,
+            'is_pulling_ahead' => $isPullingAhead,
+        ]);
+    }
+
+    usort($highlights, static function (array $a, array $b): int {
+        $weight = static fn (array $x) => ($x['is_above_average'] ? 100 : 0) + ($x['is_pulling_ahead'] ? 10 : 0) + ($x['is_improving'] ? 1 : 0);
+
+        return $weight($b) <=> $weight($a);
+    });
+
+    return $highlights;
 }
 
 /**

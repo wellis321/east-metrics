@@ -63,6 +63,11 @@ ob_start();
                 <p>Indicators that are declining year-on-year, already below the Scotland average, or still
                 ahead of it but losing ground — flagged automatically, not left for someone to notice.</p>
             </article>
+            <article class="landing-feature-card">
+                <h3>Highlights</h3>
+                <p>The mirror image of Alerts — indicators above the Scotland average, pulling further
+                ahead, or improving year-on-year, so good performance gets noticed too.</p>
+            </article>
         </div>
     </div>
 </section>

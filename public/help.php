@@ -15,6 +15,7 @@ ob_start();
     <a href="#data">Where the data comes from</a>
     <a href="#dashboard">Dashboard</a>
     <a href="#alerts">Alerts</a>
+    <a href="#highlights">Highlights</a>
     <a href="#trends">Trends</a>
     <a href="#compare">Compare</a>
     <a href="#export">Export</a>
@@ -85,6 +86,28 @@ ob_start();
         to filter the table down to just that flag, and click "show all" to clear the filter again.</p>
         <p style="margin-bottom:0;">Click anywhere on a row to see that indicator's full trend graph — a
         "← Back to alerts" link on the Trends page brings you back to this exact filtered view afterward.</p>
+    </div>
+</div>
+
+<div class="section" id="highlights">
+    <h2>Highlights</h2>
+    <div class="card">
+        <p>The mirror image of Alerts — indicators worth celebrating rather than worrying about, judged
+        with the same "higher/lower is better" logic. The same indicator can appear on both pages at once
+        for different reasons (e.g. above average this year, but declining vs last year), since each page
+        only looks at its own three conditions:</p>
+        <ul class="landing-list" style="margin-bottom:0;">
+            <li><span class="badge badge-new" style="margin-right:.35rem;"><?= icon_above_average() ?> Above average</span>
+                — East Renfrewshire's current value is on the better side of the Scotland-wide average.</li>
+            <li><span class="badge badge-teal" style="margin-right:.35rem;"><?= icon_pulling_ahead() ?> Pulling ahead</span>
+                — already ahead of the Scotland average, and the lead has grown since last year by more than
+                rounding noise would explain.</li>
+            <li><span class="badge badge-landlord" style="margin-right:.35rem;"><?= icon_improving() ?> Improving</span>
+                — moved in the right direction versus last year, regardless of where it sits against the
+                Scotland average.</li>
+        </ul>
+        <p style="margin-bottom:0;">Works exactly like Alerts otherwise — the summary cards filter the table,
+        and clicking a row opens its trend graph with a "← Back to highlights" link to return.</p>
     </div>
 </div>
 
@@ -210,12 +233,12 @@ ob_start();
         <p>This site uses the same login as the SOR Management System and AS-IS process mapping — one
         account works across all of them (see the links in the footer). There's no separate sign-up here;
         ask an administrator if you need access.</p>
-        <p>Everyone with an account can view the Dashboard, Alerts, Trends, Compare, Export, and Changelog
-        pages. Uploading and deleting data imports is restricted to admin accounts, and the
+        <p>Everyone with an account can view the Dashboard, Alerts, Highlights, Trends, Compare, Export, and
+        Changelog pages. Uploading and deleting data imports is restricted to admin accounts, and the
         <strong>Import data</strong> link in the top bar only appears if your account has that role.</p>
-        <p style="margin-bottom:0;">Dashboard, Alerts, Trends, and Compare sit in the main navigation bar;
-        Export and this Help page live in the smaller links next to your name, top right — the Changelog
-        and Security pages are linked from this page's sidebar rather than the main navigation.</p>
+        <p style="margin-bottom:0;">Dashboard, Alerts, Highlights, Trends, and Compare sit in the main
+        navigation bar; Export and this Help page live in the smaller links next to your name, top right —
+        the Changelog and Security pages are linked from this page's sidebar rather than the main navigation.</p>
     </div>
 </div>
 

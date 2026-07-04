@@ -90,12 +90,17 @@ if (($_GET['download'] ?? '') === 'csv') {
 }
 
 $cameFrom = $_GET['from'] ?? '';
-$backToAlertsFlag = $_GET['flag'] ?? '';
-if (!in_array($backToAlertsFlag, ['below_average', 'approaching', 'declining'], true)) {
-    $backToAlertsFlag = '';
+$backFlag = $_GET['flag'] ?? '';
+$validFlagsByOrigin = [
+    'alerts' => ['below_average', 'approaching', 'declining'],
+    'highlights' => ['above_average', 'pulling_ahead', 'improving'],
+];
+if (!in_array($backFlag, $validFlagsByOrigin[$cameFrom] ?? [], true)) {
+    $backFlag = '';
 }
 $backLink = match ($cameFrom) {
-    'alerts' => ['/alerts.php' . ($backToAlertsFlag !== '' ? '?flag=' . $backToAlertsFlag : ''), 'Back to alerts'],
+    'alerts' => ['/alerts.php' . ($backFlag !== '' ? '?flag=' . $backFlag : ''), 'Back to alerts'],
+    'highlights' => ['/highlights.php' . ($backFlag !== '' ? '?flag=' . $backFlag : ''), 'Back to highlights'],
     'dashboard' => ['/dashboard.php', 'Back to dashboard'],
     default => null,
 };
