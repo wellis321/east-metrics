@@ -66,20 +66,25 @@ $chartData = [
     'unit' => $selectedIndicator['unit'],
 ];
 
-$fromAlerts = ($_GET['from'] ?? '') === 'alerts';
+$cameFrom = $_GET['from'] ?? '';
 $backToAlertsFlag = $_GET['flag'] ?? '';
 if (!in_array($backToAlertsFlag, ['below_average', 'approaching', 'declining'], true)) {
     $backToAlertsFlag = '';
 }
+$backLink = match ($cameFrom) {
+    'alerts' => ['/alerts.php' . ($backToAlertsFlag !== '' ? '?flag=' . $backToAlertsFlag : ''), 'Back to alerts'],
+    'dashboard' => ['/dashboard.php', 'Back to dashboard'],
+    default => null,
+};
 
 ob_start();
 ?>
 <h1>Trends</h1>
 <p class="subtitle">East Renfrewshire's performance over time, against the Scotland-wide average.</p>
 
-<?php if ($fromAlerts): ?>
+<?php if ($backLink !== null): ?>
     <p class="back-link">
-        <a href="/alerts.php<?= $backToAlertsFlag !== '' ? '?flag=' . h($backToAlertsFlag) : '' ?>">&larr; Back to alerts</a>
+        <a href="<?= h($backLink[0]) ?>">&larr; <?= h($backLink[1]) ?></a>
     </p>
 <?php endif; ?>
 

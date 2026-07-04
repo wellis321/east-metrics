@@ -50,14 +50,14 @@ $grouped = group_kpis_by_category($kpis);
                     $deltaText = fmt_delta($kpi['delta'], $kpi['unit']);
                 }
             ?>
-            <div class="kpi-card">
+            <a class="kpi-card kpi-card-link" href="/trends.php?indicator=<?= urlencode($kpi['column_name']) ?>&from=dashboard">
                 <div class="kpi-label"><?= h($kpi['short_label']) ?></div>
                 <div class="kpi-value"><?= h(fmt_value($kpi['current'], $kpi['unit'])) ?></div>
                 <div class="kpi-meta">
                     <?php if ($deltaText !== ''): ?><span class="<?= $deltaClass ?>"><?= h($deltaText) ?> vs prior year</span><?php endif; ?>
                     <?php if ($kpi['scotland_avg'] !== null): ?><span>Scotland avg: <?= h(fmt_value((string) $kpi['scotland_avg'], $kpi['unit'])) ?></span><?php endif; ?>
                 </div>
-            </div>
+            </a>
         <?php endforeach; ?>
     </div>
 <?php endforeach; ?>
