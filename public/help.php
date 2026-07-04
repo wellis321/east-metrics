@@ -21,6 +21,7 @@ ob_start();
     <a href="#changelog">Changelog</a>
     <?php if (($_SESSION['app_role'] ?? '') === 'admin'): ?>
     <a href="#admin">Importing new data</a>
+    <a href="#demo-data">Showing sample data</a>
     <?php endif; ?>
     <a href="#access">Accounts &amp; access</a>
     <a href="#faq">Common questions</a>
@@ -53,9 +54,12 @@ ob_start();
         <p>East Renfrewshire's headline figures for the latest year available, grouped into categories
         (Tenant satisfaction, Housing quality &amp; repairs, Neighbourhood &amp; lettings, Access to
         housing &amp; support, Value for money &amp; rents, Gypsy/Traveller sites).</p>
-        <p style="margin-bottom:0;">Each card shows the current value, how it moved versus the prior year, and the
+        <p>Each card shows the current value, how it moved versus the prior year, and the
         Scotland-wide average for the same year — so you can see both the trend and how East Renfrewshire
-        compares, at a glance.</p>
+        compares, at a glance. Click any card to jump straight to that indicator's full trend graph.</p>
+        <p style="margin-bottom:0;">Use the <strong>Search indicators</strong> box if you know roughly what
+        you're looking for (e.g. "repairs" or "rent") — it filters the cards as you type and hides any
+        category with no matches, rather than making you scroll through all ~40.</p>
     </div>
 </div>
 
@@ -77,8 +81,10 @@ ob_start();
                 — moved in the wrong direction versus last year, regardless of where it sits against the
                 Scotland average.</li>
         </ul>
-        <p style="margin-bottom:0;">The three summary cards at the top of the page are clickable — click one
+        <p>The three summary cards at the top of the page are clickable — click one
         to filter the table down to just that flag, and click "show all" to clear the filter again.</p>
+        <p style="margin-bottom:0;">Click anywhere on a row to see that indicator's full trend graph — a
+        "← Back to alerts" link on the Trends page brings you back to this exact filtered view afterward.</p>
     </div>
 </div>
 
@@ -90,9 +96,12 @@ ob_start();
         you can search for and tick any number of other councils or housing associations to add as extra
         lines on the same chart — the panel can be dragged anywhere on screen, and closing it never disturbs
         the rest of the page.</p>
-        <p style="margin-bottom:0;">If a landlord you've added doesn't show a line, it's not a display fault —
+        <p>If a landlord you've added doesn't show a line, it's not a display fault —
         a note appears under the chart naming any landlord with no reported value for that particular
         indicator in any year. Not every landlord reports every indicator the same way.</p>
+        <p style="margin-bottom:0;"><strong>⬇ Download this chart's data (CSV)</strong>, under the chart,
+        exports exactly what's plotted — East Renfrewshire, the Scotland average, and every peer you've
+        added — ready to paste into a report, rather than the whole dataset.</p>
     </div>
 </div>
 
@@ -103,6 +112,8 @@ ob_start();
         as many other landlords as you choose, indicator by indicator, with the Scotland average alongside
         for reference. Use the same floating "Add landlords" panel as Trends to build the list of landlords
         to compare.</p>
+        <p style="margin-bottom:0;"><strong>⬇ Download this table (CSV)</strong> exports the table exactly as
+        shown — formatted values (%, £, days) and all — for whichever year and landlords you've selected.</p>
     </div>
 </div>
 
@@ -165,6 +176,30 @@ ob_start();
         needs an explicit confirmation.</p>
         <p style="margin-bottom:0;">Use this if the wrong file gets uploaded by mistake — delete it, then
         upload the correct one.</p>
+    </div>
+</div>
+
+<div class="section" id="demo-data">
+    <h2>Showing the site to people with sample data</h2>
+    <div class="card">
+        <p>A fully fictional dataset lives at <code>documents/sample-synthetic-data.csv</code> — same
+        column structure as the real file, but every landlord name is made up (including a fake
+        "East Renfrewshire Council (Sample Data)" standing in for the real council), and every value is
+        randomly generated. Useful for demoing the site to people without showing them real performance
+        figures.</p>
+        <p style="margin:0 0 .5rem;"><strong>To run a demo:</strong></p>
+        <ul class="landing-list">
+            <li>On <a href="/admin/import.php">Import data</a>, note the real import in "Recent imports",
+                then <strong>delete it</strong>.</li>
+            <li>Upload <code>sample-synthetic-data.csv</code> in its place. Every page will now clearly
+                show "(Sample Data)" instead of the real council name, so nobody can mistake it for real
+                figures.</li>
+            <li>When you're done, <strong>delete the sample import</strong>, then re-upload the real
+                <code>Full data set SHR.xlsx</code> to restore normal service.</li>
+        </ul>
+        <p style="margin-bottom:0;">Deleting an import removes the data it introduced (see above) — there's
+        no "preview and discard" mode, so don't skip the final step, or the site will be left showing
+        sample data (or nothing at all) until the real file is re-imported.</p>
     </div>
 </div>
 <?php endif; ?>
