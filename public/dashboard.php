@@ -34,15 +34,6 @@ $previousYear = $yearIndex > 0 ? $years[$yearIndex - 1] : null;
 
 $kpis = dashboard_kpis($pdo, $erId, $currentYear, $previousYear);
 $grouped = group_kpis_by_category($kpis);
-
-$recentChanges = $pdo->prepare(
-    'SELECT ce.*, l.name AS landlord_name FROM change_events ce
-       JOIN landlords l ON l.id = ce.landlord_id
-      WHERE ce.landlord_id = ?
-      ORDER BY ce.created_at DESC, ce.id DESC LIMIT 8'
-);
-$recentChanges->execute([$erId]);
-$recentChanges = $recentChanges->fetchAll();
 ?>
 <h1>East Renfrewshire Council</h1>
 <p class="subtitle">Housing Charter performance for <?= h($currentYear) ?><?= $previousYear ? ' (vs ' . h($previousYear) . ')' : '' ?></p>
@@ -70,33 +61,6 @@ $recentChanges = $recentChanges->fetchAll();
         <?php endforeach; ?>
     </div>
 <?php endforeach; ?>
-
-<div class="section">
-    <h2>What's changed recently</h2>
-    <div class="card">
-        <?php if ($recentChanges === []): ?>
-            <p class="empty-state">No changes recorded yet.</p>
-        <?php else: ?>
-            <?php foreach ($recentChanges as $c): ?>
-                <div class="change-row">
-                    <div>
-                        <?php if ($c['change_type'] === 'new_landlord'): ?>
-                            <span class="badge badge-landlord">New</span>
-                        <?php elseif ($c['change_type'] === 'revised_prior_year'): ?>
-                            <span class="badge badge-revised">Revised</span>
-                        <?php else: ?>
-                            <span class="badge badge-new">New year</span>
-                        <?php endif; ?>
-                        <strong><?= h(preg_replace('/^\d+(\s*&\s*\d+)?\s*-\s*/', '', $c['column_name']) ?? $c['column_name']) ?></strong>
-                        <span class="change-col">(<?= h($c['financial_year']) ?>)</span>
-                    </div>
-                    <div class="change-col"><?= h((string) $c['previous_value']) ?> &rarr; <?= h((string) $c['new_value']) ?></div>
-                </div>
-            <?php endforeach; ?>
-            <p style="margin:1rem 0 0;"><a href="/changelog.php">View full changelog &rarr;</a></p>
-        <?php endif; ?>
-    </div>
-</div>
 <?php
 $content = ob_get_clean();
 render_layout('Dashboard', $content, ['active' => 'dashboard']);
