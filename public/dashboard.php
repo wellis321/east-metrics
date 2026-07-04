@@ -35,7 +35,7 @@ $previousYear = $yearIndex > 0 ? $years[$yearIndex - 1] : null;
 $kpis = dashboard_kpis($pdo, $erId, $currentYear, $previousYear);
 $grouped = group_kpis_by_category($kpis);
 ?>
-<h1>East Renfrewshire Council</h1>
+<h1><?= h(landlord_name($pdo, $erId) ?? 'East Renfrewshire Council') ?></h1>
 <p class="subtitle">Housing Charter performance for <?= h($currentYear) ?><?= $previousYear ? ' (vs ' . h($previousYear) . ')' : '' ?></p>
 
 <?php foreach ($grouped as $category => $items): ?>

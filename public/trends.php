@@ -59,6 +59,7 @@ foreach ($peerIds as $peerId) {
 
 $chartData = [
     'labels' => $years,
+    'erName' => landlord_name($pdo, $erId) ?? 'East Renfrewshire',
     'erValues' => array_map(static fn ($y) => is_numeric($erSeries[$y] ?? null) ? (float) $erSeries[$y] : null, $years),
     'scotlandValues' => array_map(static fn ($y) => $scotlandSeries[$y] ?? null, $years),
     'peers' => $peers,
@@ -147,7 +148,7 @@ const ctx = document.getElementById('trendChart');
 const peerColors = ['#1d4ed8', '#9333ea', '#c2410c', '#0891b2', '#be185d', '#4d7c0f'];
 const datasets = [
     {
-        label: 'East Renfrewshire',
+        label: chartData.erName,
         data: chartData.erValues,
         borderColor: '#005a44',
         backgroundColor: '#005a44',
