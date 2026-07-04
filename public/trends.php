@@ -65,10 +65,22 @@ $chartData = [
     'unit' => $selectedIndicator['unit'],
 ];
 
+$fromAlerts = ($_GET['from'] ?? '') === 'alerts';
+$backToAlertsFlag = $_GET['flag'] ?? '';
+if (!in_array($backToAlertsFlag, ['below_average', 'approaching', 'declining'], true)) {
+    $backToAlertsFlag = '';
+}
+
 ob_start();
 ?>
 <h1>Trends</h1>
 <p class="subtitle">East Renfrewshire's performance over time, against the Scotland-wide average.</p>
+
+<?php if ($fromAlerts): ?>
+    <p class="back-link">
+        <a href="/alerts.php<?= $backToAlertsFlag !== '' ? '?flag=' . h($backToAlertsFlag) : '' ?>">&larr; Back to alerts</a>
+    </p>
+<?php endif; ?>
 
 <form method="GET" class="filters">
     <div class="form-row" style="margin-bottom:0;">

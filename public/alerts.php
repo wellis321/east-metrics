@@ -97,9 +97,15 @@ $flagLabels = ['below_average' => 'Below Scotland average', 'approaching' => 'Cl
             </thead>
             <tbody>
             <?php foreach ($displayed as $a): ?>
-                <tr>
+                <?php
+                    $trendUrl = '/trends.php?indicator=' . urlencode($a['column_name']) . '&from=alerts';
+                    if ($flag !== '') {
+                        $trendUrl .= '&flag=' . urlencode($flag);
+                    }
+                ?>
+                <tr class="alert-row" data-href="<?= h($trendUrl) ?>">
                     <td>
-                        <?= h($a['short_label']) ?>
+                        <a href="<?= h($trendUrl) ?>" class="alert-row-link"><?= h($a['short_label']) ?></a>
                         <div class="change-col" style="font-size:.75rem;"><?= h($a['category']) ?></div>
                     </td>
                     <td><?= h(fmt_value($a['current'] !== null ? (string) $a['current'] : null, $a['unit'])) ?></td>
@@ -114,9 +120,20 @@ $flagLabels = ['below_average' => 'Below Scotland average', 'approaching' => 'Cl
             <?php endforeach; ?>
             </tbody>
         </table>
+        <p class="chart-note">Click any row to see its trend over time.</p>
         <?php endif; ?>
     </div>
 <?php endif; ?>
+<script>
+document.querySelectorAll('tr.alert-row[data-href]').forEach(function (row) {
+    row.addEventListener('click', function (e) {
+        if (e.target.closest('a')) {
+            return;
+        }
+        window.location = row.dataset.href;
+    });
+});
+</script>
 <?php
 $content = ob_get_clean();
 render_layout('Alerts', $content, ['active' => 'alerts']);

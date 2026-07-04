@@ -17,6 +17,7 @@ ob_start();
     <a href="#alerts">Alerts</a>
     <a href="#trends">Trends</a>
     <a href="#compare">Compare</a>
+    <a href="#export">Export</a>
     <a href="#changelog">Changelog</a>
     <?php if (($_SESSION['app_role'] ?? '') === 'admin'): ?>
     <a href="#admin">Importing new data</a>
@@ -76,6 +77,8 @@ ob_start();
                 — moved in the wrong direction versus last year, regardless of where it sits against the
                 Scotland average.</li>
         </ul>
+        <p style="margin-bottom:0;">The three summary cards at the top of the page are clickable — click one
+        to filter the table down to just that flag, and click "show all" to clear the filter again.</p>
     </div>
 </div>
 
@@ -83,8 +86,10 @@ ob_start();
     <h2>Trends</h2>
     <div class="card">
         <p>Pick any indicator and see East Renfrewshire's figure charted across every year the data covers,
-        against the Scotland average. Use the search box under "Compare with" to add any number of other
-        councils or housing associations as extra lines on the same chart.</p>
+        against the Scotland average. Click <strong>+ Add landlords</strong> to open a floating panel where
+        you can search for and tick any number of other councils or housing associations to add as extra
+        lines on the same chart — the panel can be dragged anywhere on screen, and closing it never disturbs
+        the rest of the page.</p>
         <p style="margin-bottom:0;">If a landlord you've added doesn't show a line, it's not a display fault —
         a note appears under the chart naming any landlord with no reported value for that particular
         indicator in any year. Not every landlord reports every indicator the same way.</p>
@@ -96,8 +101,26 @@ ob_start();
     <div class="card">
         <p>A side-by-side table for a single year: East Renfrewshire (pinned as the first column) against
         as many other landlords as you choose, indicator by indicator, with the Scotland average alongside
-        for reference. Use the same search-and-pick control as Trends to build the list of landlords to
-        compare.</p>
+        for reference. Use the same floating "Add landlords" panel as Trends to build the list of landlords
+        to compare.</p>
+    </div>
+</div>
+
+<div class="section" id="export">
+    <h2>Export</h2>
+    <div class="card">
+        <p>Download the stored data for use elsewhere, in three formats: <strong>CSV</strong>,
+        <strong>Excel (.xlsx)</strong>, or <strong>JSON</strong>. Before downloading, you can choose:</p>
+        <ul class="landing-list">
+            <li><strong>What to include</strong> — the ~40 curated key indicators shown throughout this
+                site, or every raw field from the regulator's original file (several hundred columns).</li>
+            <li><strong>Landlords</strong> — every Scottish council and housing association, or East
+                Renfrewshire only.</li>
+            <li><strong>Financial year</strong> — a single year, or everything the site holds.</li>
+        </ul>
+        <p style="margin-bottom:0;">Click <strong>Preview</strong> first to see the actual rows and columns
+        in a table on the page (capped to the first 25 rows) before committing to a download — useful for
+        checking you've picked the filters you meant to, especially for the "all raw data" option.</p>
     </div>
 </div>
 
@@ -152,8 +175,12 @@ ob_start();
         <p>This site uses the same login as the SOR Management System and AS-IS process mapping — one
         account works across all of them (see the links in the footer). There's no separate sign-up here;
         ask an administrator if you need access.</p>
-        <p style="margin-bottom:0;">Everyone with an account can view the Dashboard, Alerts, Trends, Compare
-        and Changelog pages. Uploading and deleting data imports is restricted to admin accounts.</p>
+        <p>Everyone with an account can view the Dashboard, Alerts, Trends, Compare, Export, and Changelog
+        pages. Uploading and deleting data imports is restricted to admin accounts, and the
+        <strong>Import data</strong> link in the top bar only appears if your account has that role.</p>
+        <p style="margin-bottom:0;">Dashboard, Alerts, Trends, and Compare sit in the main navigation bar;
+        Export and this Help page live in the smaller links next to your name, top right — the Changelog
+        and Security pages are linked from this page's sidebar rather than the main navigation.</p>
     </div>
 </div>
 
