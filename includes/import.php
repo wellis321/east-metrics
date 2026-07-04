@@ -5,6 +5,13 @@ declare(strict_types=1);
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
 /**
+ * Columns captured directly on the landlords/submissions tables rather than
+ * as indicator_values rows — stored once per landlord (or landlord+year),
+ * not duplicated across every column-value pair.
+ */
+const IDENTITY_COLUMNS = ['Social Landlord ID', 'Landlord name', 'Financial year', 'Landlord type', 'Settlement', 'National operator'];
+
+/**
  * Parses the SHR "Full data set" xlsx into an array of associative rows
  * (header => cell value), reading only the first worksheet.
  *
@@ -200,7 +207,7 @@ function run_shr_import(array $parsed, string $filename, ?int $uploadedBy): arra
     // For the "this file looks thin" note below — how many distinct columns
     // has the database seen before now, across any prior import.
     $priorColumnCount = (int) $pdo->query('SELECT COUNT(DISTINCT column_name) FROM indicator_values')->fetchColumn();
-    $fileColumnCount = count(array_diff($parsed['headers'], ['Social Landlord ID', 'Landlord name', 'Financial year', '']));
+    $fileColumnCount = count(array_diff($parsed['headers'], IDENTITY_COLUMNS, ['']));
 
     $pdo->beginTransaction();
 
@@ -317,7 +324,7 @@ function run_shr_import(array $parsed, string $filename, ?int $uploadedBy): arra
             );
 
             foreach ($row as $column => $value) {
-                if (in_array($column, ['Social Landlord ID', 'Landlord name', 'Financial year'], true)) {
+                if (in_array($column, IDENTITY_COLUMNS, true)) {
                     continue;
                 }
                 $textValue = $value === null ? null : trim((string) $value);

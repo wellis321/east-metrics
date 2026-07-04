@@ -259,7 +259,16 @@ function export_columns(PDO $pdo, bool $keyOnly): array
         return array_column(key_indicator_catalog($pdo), 'column_name');
     }
 
-    return $pdo->query('SELECT DISTINCT column_name FROM indicator_values ORDER BY column_name')->fetchAll(PDO::FETCH_COLUMN);
+    $columns = $pdo->query('SELECT DISTINCT column_name FROM indicator_values ORDER BY column_name')->fetchAll(PDO::FETCH_COLUMN);
+
+    // Defensive: export_rows() already adds these as identity fields up
+    // front, so if a stray indicator_values row ever duplicates one (as
+    // older imports did, before the importer excluded them), it must not
+    // also be included here — a repeated column name breaks CSV/JSON/XLSX
+    // consumers that key by header.
+    $identityColumns = ['Social Landlord ID', 'Landlord name', 'Financial year', 'Landlord type', 'Settlement', 'National operator'];
+
+    return array_values(array_diff($columns, $identityColumns));
 }
 
 /** @return int total landlord+year rows an export with these filters would contain */
