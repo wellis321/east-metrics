@@ -147,7 +147,7 @@ ob_start();
     <h2>Importing new data (admins)</h2>
     <div class="card">
         <p>From <a href="/admin/import.php">Import data</a>, upload the regulator's annual "Full data set"
-        xlsx file. A few things worth knowing:</p>
+        as either .xlsx or .csv. A few things worth knowing:</p>
         <ul class="landing-list">
             <li>Existing landlord/year records are updated in place — you don't need to delete anything
                 before re-uploading a corrected file.</li>

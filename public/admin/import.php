@@ -14,13 +14,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!csrf_verify()) {
         $error = 'Invalid form submission. Please try again.';
     } elseif (empty($_FILES['xlsx']) || $_FILES['xlsx']['error'] !== UPLOAD_ERR_OK) {
-        $error = 'Please choose a valid .xlsx file to upload.';
+        $error = 'Please choose a valid .xlsx or .csv file to upload.';
     } else {
         $tmpPath = $_FILES['xlsx']['tmp_name'];
         $originalName = $_FILES['xlsx']['name'];
+        $lowerName = strtolower($originalName);
 
-        if (!str_ends_with(strtolower($originalName), '.xlsx')) {
-            $error = 'Only .xlsx files are supported.';
+        if (!str_ends_with($lowerName, '.xlsx') && !str_ends_with($lowerName, '.csv')) {
+            $error = 'Only .xlsx or .csv files are supported.';
         } else {
             try {
                 $parsed = parse_shr_xlsx($tmpPath);
@@ -54,8 +55,8 @@ $imports = db()->query('SELECT * FROM imports ORDER BY uploaded_at DESC LIMIT 10
 ob_start();
 ?>
 <h1>Import SHR data</h1>
-<p class="subtitle">Upload the regulator's annual "Full data set" xlsx. Existing landlord/year rows are
-    updated in place; new years and revisions are recorded on the <a href="/changelog.php">changelog</a>.</p>
+<p class="subtitle">Upload the regulator's annual "Full data set" as .xlsx or .csv. Existing landlord/year
+    rows are updated in place; new years and revisions are recorded on the <a href="/changelog.php">changelog</a>.</p>
 
 <?php if ($error !== null): ?>
     <div class="flash flash-error"><?= h($error) ?></div>
@@ -65,8 +66,8 @@ ob_start();
     <form method="POST" enctype="multipart/form-data" id="import-form">
         <?= csrf_field() ?>
         <div class="form-row">
-            <label for="xlsx">SHR Charter data set (.xlsx)</label>
-            <input type="file" id="xlsx" name="xlsx" accept=".xlsx" required>
+            <label for="xlsx">SHR Charter data set (.xlsx or .csv)</label>
+            <input type="file" id="xlsx" name="xlsx" accept=".xlsx,.csv" required>
         </div>
         <button type="submit" class="btn" id="import-submit">Upload &amp; import</button>
     </form>
@@ -78,7 +79,7 @@ ob_start();
         <h2>Importing your data…</h2>
         <p>Parsing the file and comparing it against what's already stored can take up to a minute for the
         full data set.</p>
-        <p><strong>Please don't close this tab or navigate away</strong> — you'll be taken to the changelog
+        <p><strong>Please don't close this tab or navigate away</strong> — you'll be taken to the dashboard
         automatically once it's done.</p>
     </div>
 </div>
