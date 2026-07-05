@@ -153,6 +153,57 @@ function dashboard_kpis(PDO $pdo, int $landlordId, string $currentYear, ?string 
     return $out;
 }
 
+/**
+ * Latest value of each daily operational metric (from daily_metrics, fed in
+ * via bin/import-daily.php), plus a delta against the value 7 days earlier.
+ * Empty array if no daily feed has landed yet — dashboard.php omits the
+ * "Today" section entirely in that case rather than showing empty cards.
+ *
+ * @return array<int, array{metric_key:string, short_label:string, unit:string, value:?string, value_numeric:?float, metric_date:?string, delta:?float}>
+ */
+function todays_daily_metrics(PDO $pdo, int $landlordId): array
+{
+    $catalog = $pdo->query('SELECT metric_key, short_label, unit FROM daily_metric_catalog ORDER BY metric_key')->fetchAll();
+
+    $latestStmt = $pdo->prepare(
+        'SELECT value_text, value_numeric, metric_date FROM daily_metrics
+          WHERE landlord_id = ? AND metric_key = ? ORDER BY metric_date DESC LIMIT 1'
+    );
+    $priorStmt = $pdo->prepare(
+        'SELECT value_numeric FROM daily_metrics
+          WHERE landlord_id = ? AND metric_key = ? AND metric_date <= ? ORDER BY metric_date DESC LIMIT 1'
+    );
+
+    $out = [];
+    foreach ($catalog as $metric) {
+        $latestStmt->execute([$landlordId, $metric['metric_key']]);
+        $latest = $latestStmt->fetch();
+        if ($latest === false) {
+            continue;
+        }
+
+        $sevenDaysAgo = (new DateTimeImmutable($latest['metric_date']))->modify('-7 days')->format('Y-m-d');
+        $priorStmt->execute([$landlordId, $metric['metric_key'], $sevenDaysAgo]);
+        $priorNumeric = $priorStmt->fetchColumn();
+        $priorNumeric = $priorNumeric === false || $priorNumeric === null ? null : (float) $priorNumeric;
+
+        $currentNumeric = $latest['value_numeric'] !== null ? (float) $latest['value_numeric'] : null;
+        $delta = ($currentNumeric !== null && $priorNumeric !== null) ? $currentNumeric - $priorNumeric : null;
+
+        $out[] = [
+            'metric_key' => $metric['metric_key'],
+            'short_label' => $metric['short_label'],
+            'unit' => $metric['unit'],
+            'value' => $latest['value_text'],
+            'value_numeric' => $currentNumeric,
+            'metric_date' => $latest['metric_date'],
+            'delta' => $delta,
+        ];
+    }
+
+    return $out;
+}
+
 /** @return array<string,array<int,array{column_name:string,short_label:string,category:string,unit:string,current:?string,current_numeric:?float,previous:?string,scotland_avg:?float,delta:?float}>> grouped by category */
 function group_kpis_by_category(array $kpis): array
 {

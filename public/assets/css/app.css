@@ -367,6 +367,16 @@ select { max-width: 420px; }
 .docs-sidebar-external { margin-top: .5rem; padding-top: .75rem !important; border-top: 1px solid var(--border); color: var(--accent) !important; font-weight: 600; }
 .docs-sidebar-external + .docs-sidebar-external { margin-top: 0; padding-top: .1rem !important; border-top: none; }
 
+.source-link-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: .6rem; }
+.source-link {
+    display: flex; flex-direction: column; gap: .3rem; padding: .75rem .9rem; border-radius: var(--r);
+    border: 1px solid var(--border); background: var(--surface); text-decoration: none; transition: border-color .15s, background .15s;
+}
+.source-link:hover { border-color: var(--accent); background: var(--bg); }
+.source-link-title { font-size: .875rem; font-weight: 600; color: var(--text); line-height: 1.35; }
+.source-link-domain { display: flex; align-items: center; gap: .3rem; font-size: .75rem; color: var(--muted); }
+.source-link-domain svg { flex-shrink: 0; color: var(--accent); }
+
 @media (max-width: 780px) {
     .docs-layout { grid-template-columns: 1fr; }
     .docs-sidebar { position: static; flex-direction: row; flex-wrap: wrap; gap: .3rem; }

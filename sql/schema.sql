@@ -73,6 +73,36 @@ CREATE TABLE IF NOT EXISTS indicator_catalog (
     PRIMARY KEY (column_name(191))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Daily operational figures fed in from the service's own systems (NEC,
+-- later Integra/ROCC/APEX) — distinct from submissions/indicator_values
+-- above, which are keyed one-row-per-landlord-per-financial-year off the
+-- regulator's annual return and can't represent a daily time series.
+CREATE TABLE IF NOT EXISTS daily_metric_catalog (
+    metric_key VARCHAR(100) NOT NULL,
+    short_label VARCHAR(255) NOT NULL,
+    unit ENUM('percent','days','hours','gbp','count','text') NOT NULL DEFAULT 'text',
+    -- NULL = direction not known/applicable, same convention as
+    -- indicator_catalog.higher_is_better.
+    higher_is_better TINYINT(1) NULL,
+    PRIMARY KEY (metric_key)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS daily_metrics (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    landlord_id INT UNSIGNED NOT NULL,
+    metric_key VARCHAR(100) NOT NULL,
+    metric_date DATE NOT NULL,
+    value_numeric DECIMAL(14,4) NULL,
+    value_text VARCHAR(255) NULL,
+    source VARCHAR(50) NOT NULL,
+    import_id INT UNSIGNED NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uq_landlord_metric_date (landlord_id, metric_key, metric_date),
+    KEY idx_metric_date (metric_date),
+    CONSTRAINT fk_daily_metrics_landlord FOREIGN KEY (landlord_id) REFERENCES landlords(id),
+    CONSTRAINT fk_daily_metrics_import FOREIGN KEY (import_id) REFERENCES imports(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE IF NOT EXISTS change_events (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     import_id INT UNSIGNED NOT NULL,

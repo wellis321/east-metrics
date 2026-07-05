@@ -19,6 +19,19 @@ const IDENTITY_COLUMNS = ['Social Landlord ID', 'Landlord name', 'Financial year
  */
 function parse_shr_xlsx(string $path): array
 {
+    // PhpSpreadsheet holds the whole workbook in memory as objects, which for
+    // the SHR "Full data set" (~500 columns x several years x every Scottish
+    // landlord) runs well past PHP's typical 128M default — bump both limits
+    // here so the import works under any host's default config, not just
+    // ones already tuned for it.
+    $memoryLimit = ini_get('memory_limit');
+    if ($memoryLimit !== '-1' && !str_ends_with($memoryLimit, 'G') && (int) $memoryLimit < 512) {
+        ini_set('memory_limit', '512M');
+    }
+    if ((int) ini_get('max_execution_time') !== 0) {
+        set_time_limit(120);
+    }
+
     $spreadsheet = IOFactory::load($path);
     $sheet = $spreadsheet->getActiveSheet();
     $iterator = $sheet->getRowIterator();

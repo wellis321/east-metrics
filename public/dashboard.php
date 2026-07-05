@@ -34,9 +34,36 @@ $previousYear = $yearIndex > 0 ? $years[$yearIndex - 1] : null;
 
 $kpis = dashboard_kpis($pdo, $erId, $currentYear, $previousYear);
 $grouped = group_kpis_by_category($kpis);
+$dailyMetrics = todays_daily_metrics($pdo, $erId);
 ?>
 <h1><?= h(landlord_name($pdo, $erId) ?? 'East Renfrewshire Council') ?></h1>
 <p class="subtitle">Housing Charter performance for <?= h($currentYear) ?><?= $previousYear ? ' (vs ' . h($previousYear) . ')' : '' ?></p>
+
+<?php if ($dailyMetrics !== []): ?>
+<div class="category-block">
+    <div class="category-title">Today <span class="category-count">· daily operational figures</span></div>
+    <div class="kpi-grid">
+        <?php foreach ($dailyMetrics as $metric): ?>
+            <?php
+                $deltaClass = 'kpi-delta-flat';
+                $deltaText = '';
+                if ($metric['delta'] !== null && abs($metric['delta']) > 0.001) {
+                    $deltaClass = $metric['delta'] > 0 ? 'kpi-delta-up' : 'kpi-delta-down';
+                    $deltaText = fmt_delta($metric['delta'], $metric['unit']);
+                }
+            ?>
+            <div class="kpi-card">
+                <div class="kpi-label"><?= h($metric['short_label']) ?></div>
+                <div class="kpi-value"><?= h(fmt_value($metric['value'], $metric['unit'])) ?></div>
+                <div class="kpi-meta">
+                    <?php if ($deltaText !== ''): ?><span class="<?= $deltaClass ?>"><?= h($deltaText) ?> vs 7 days ago</span><?php endif; ?>
+                    <span>as of <?= h($metric['metric_date']) ?></span>
+                </div>
+            </div>
+        <?php endforeach; ?>
+    </div>
+</div>
+<?php endif; ?>
 
 <div class="form-row" style="max-width:360px;">
     <label for="dashboard-search">Search indicators</label>

@@ -176,7 +176,7 @@ function render_layout(string $title, string $content, array $options = []): voi
             </nav>
             <div class="topbar-user">
                 <div class="topbar-dropdown" data-dropdown>
-                    <button type="button" class="topbar-util topbar-dropdown-toggle <?= in_array($active, ['export', 'import'], true) ? 'active' : '' ?>" data-dropdown-toggle>
+                    <button type="button" class="topbar-util topbar-dropdown-toggle <?= in_array($active, ['export', 'import', 'import-daily', 'nec-integration'], true) ? 'active' : '' ?>" data-dropdown-toggle>
                         Data
                         <svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="4,6 8,10 12,6"/></svg>
                     </button>
@@ -184,6 +184,8 @@ function render_layout(string $title, string $content, array $options = []): voi
                         <a href="/export.php" class="topbar-dropdown-item <?= $active === 'export' ? 'active' : '' ?>">Export</a>
                         <?php if (($_SESSION['app_role'] ?? '') === 'admin'): ?>
                             <a href="/admin/import.php" class="topbar-dropdown-item <?= $active === 'import' ? 'active' : '' ?>">Import data</a>
+                            <a href="/admin/import-daily.php" class="topbar-dropdown-item <?= $active === 'import-daily' ? 'active' : '' ?>">Import daily figures</a>
+                            <a href="/admin/nec-integration.php" class="topbar-dropdown-item <?= $active === 'nec-integration' ? 'active' : '' ?>">NEC integration notes</a>
                         <?php endif; ?>
                     </div>
                 </div>

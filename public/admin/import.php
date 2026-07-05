@@ -14,7 +14,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!csrf_verify()) {
         $error = 'Invalid form submission. Please try again.';
     } elseif (empty($_FILES['xlsx']) || $_FILES['xlsx']['error'] !== UPLOAD_ERR_OK) {
-        $error = 'Please choose a valid .xlsx or .csv file to upload.';
+        $uploadError = $_FILES['xlsx']['error'] ?? UPLOAD_ERR_NO_FILE;
+        $error = match ($uploadError) {
+            UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE => sprintf(
+                'That file is too large — this server accepts up to %s (upload_max_filesize) and %s per request (post_max_size). Ask your host or increase these in php.ini.',
+                ini_get('upload_max_filesize'),
+                ini_get('post_max_size')
+            ),
+            UPLOAD_ERR_PARTIAL => 'The upload was interrupted partway through. Please try again.',
+            UPLOAD_ERR_NO_FILE => 'Please choose a valid .xlsx or .csv file to upload.',
+            default => 'Please choose a valid .xlsx or .csv file to upload.',
+        };
     } else {
         $tmpPath = $_FILES['xlsx']['tmp_name'];
         $originalName = $_FILES['xlsx']['name'];
