@@ -228,6 +228,7 @@ function render_layout(string $title, string $content, array $options = []): voi
 <?php if (is_logged_in()): ?>
 <script src="<?= h(asset_url('/assets/js/nav-dropdown.js')) ?>"></script>
 <?php endif; ?>
+<script src="<?= h(asset_url('/assets/js/docs-scrollspy.js')) ?>"></script>
 </body>
 </html>
     <?php

@@ -28,11 +28,10 @@ ob_start();
     <h2>Where the pilot is right now</h2>
     <div class="card">
         <p><span class="badge badge-orange" style="margin-right:.35rem;">Blocked</span> I've built and
-        tested the daily NEC feed pipeline end-to-end (<a href="/admin/import-daily.php">Import daily
-        figures</a>, backed by <code>bin/import-daily.php</code>), but I've deliberately left the actual
-        column mapping in <code>includes/providers/nec.php</code> as placeholders (<code>TODO_NEC_*</code>)
-        rather than guess at NEC's real export field names. It'll refuse to parse any real file until I have
-        a genuine sample export or API response to map against — better that than quietly importing garbage.</p>
+        tested the daily NEC feed pipeline end-to-end (see <a href="/admin/import-daily.php">Import daily
+        figures</a>), but I've deliberately left the actual field mapping as placeholders rather than guess
+        at NEC's real export field names. It'll refuse to import any real file until I have a genuine sample
+        export or API response to map against — better that than quietly importing garbage.</p>
         <p style="margin-bottom:0;">The four figures I'm aiming to bring in daily: repairs turnaround, void
         re-let time, current rent arrears %, and open ASB case count.</p>
     </div>
@@ -41,7 +40,7 @@ ob_start();
 <div class="section" id="our-system">
     <h2>Our system: NECH</h2>
     <div class="card">
-        <p>To be clear on naming, since I got this wrong in an earlier draft: we don't run OHMS. What we have
+        <p>To be clear on naming: we don't run OHMS. What we have
         is an older version of NEC's housing system that we refer to as <strong>NECH</strong>, and we're
         already talking to NEC about upgrading it. NEC has offered more than one housing management product
         over the years, and publicly available material mostly talks about their current cloud/on-premise
@@ -94,9 +93,9 @@ ob_start();
             for the replacement system's API.</li>
             <li>Either a real WSDL/sample SOAP response from NECH, or a sample CSV export — whichever's
             easier for Housing Systems to pull together.</li>
-            <li>Once I have a real sample, I'll fill in <code>includes/providers/nec.php</code>'s column
-            mapping — the rest of the pipeline (schema, upsert, dashboard "Today" section, admin upload page)
-            is already built and won't need to change.</li>
+            <li>Once I have a real sample, I'll fill in the field mapping on my end — the rest of the
+            pipeline (data storage, the dashboard's "Today" section, and the upload page) is already built
+            and won't need to change.</li>
         </ol>
     </div>
 </div>

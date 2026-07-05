@@ -109,7 +109,7 @@ h2 { font-size: 1.125rem; margin: 0 0 1rem; }
 .kpi-delta-down { color: var(--danger); font-weight: 600; }
 .kpi-delta-flat { color: var(--muted); }
 
-.section { margin-bottom: 2.5rem; }
+.section { margin-bottom: 2.5rem; scroll-margin-top: 1.25rem; }
 .category-title {
     font-size: 1.05rem;
     font-weight: 700;
@@ -362,10 +362,18 @@ select { max-width: 420px; }
     background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 1rem;
 }
 .docs-sidebar-title { font-size: .72rem; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); font-weight: 700; margin: 0 0 .4rem; }
-.docs-sidebar a { display: block; padding: .4rem .55rem; border-radius: var(--r); font-size: .875rem; color: var(--text); text-decoration: none; }
+.docs-sidebar a { display: block; padding: .4rem .55rem; border-top-right-radius: var(--r); border-bottom-right-radius: var(--r); font-size: .875rem; color: var(--text); text-decoration: none; border-left: 2px solid transparent; transition: background .15s, border-color .15s, color .15s; }
 .docs-sidebar a:hover { background: var(--bg); }
+.docs-sidebar a.is-current { background: var(--bg); border-left-color: var(--accent); color: var(--accent); font-weight: 600; }
 .docs-sidebar-external { margin-top: .5rem; padding-top: .75rem !important; border-top: 1px solid var(--border); color: var(--accent) !important; font-weight: 600; }
 .docs-sidebar-external + .docs-sidebar-external { margin-top: 0; padding-top: .1rem !important; border-top: none; }
+
+/* Smooth in-page scrolling, scoped to pages with a docs sidebar so it doesn't
+   change scroll behaviour site-wide; off for users who've asked for less motion. */
+html:has(.docs-layout) { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) {
+    html:has(.docs-layout) { scroll-behavior: auto; }
+}
 
 .source-link-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: .6rem; }
 .source-link {
