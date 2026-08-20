@@ -52,6 +52,7 @@ define('SESSION_SECRET', env('SESSION_SECRET', 'changeme') ?? 'changeme');
 define('SOR_SITE_URL', rtrim(env('SOR_SITE_URL', 'https://papayawhip-hamster-802775.hostingersite.com') ?? '', '/'));
 define('ERC_SITE_URL', rtrim(env('ERC_SITE_URL', 'https://aqua-quetzal-992173.hostingersite.com') ?? '', '/'));
 define('ASIS_SITE_URL', rtrim(env('ASIS_SITE_URL', 'https://slategray-cat-335719.hostingersite.com') ?? '', '/'));
+define('PHASE2_SITE_URL', rtrim(env('PHASE2_SITE_URL', 'https://dimgrey-koala-534577.hostingersite.com') ?? '', '/'));
 
 header('X-Robots-Tag: noindex, nofollow, noarchive, nosnippet');
 header('X-Frame-Options: DENY');

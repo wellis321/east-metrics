@@ -223,6 +223,7 @@ function render_layout(string $title, string $content, array $options = []): voi
         <a href="<?= h(ERC_SITE_URL) ?>/">ERC Portal</a>
         <a href="<?= h(ASIS_SITE_URL) ?>/">AS-IS Process Mapping</a>
         <a href="<?= h(APP_URL) ?>/">Housing Metrics</a>
+        <a href="<?= h(PHASE2_SITE_URL) ?>/">Phase 2 Tracker</a>
     </div>
 </footer>
 <?php if (is_logged_in()): ?>
